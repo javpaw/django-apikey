@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.conf import settings
+from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 from apikey.models import ApiKey, Token
 from datetime import datetime, timedelta
@@ -25,7 +26,7 @@ class TokenAuthentication(object):
         limit = datetime.now() - timedelta(0, TOKEN_VALID_SECONDS)
 
         try:
-            key = Token.objects.get(token=auth_string, last_used__gt=limit)
+            key = Token.objects.get( Q(token=auth_string), Q(expires = False) | Q(last_used__gt = limit)  )
 
             # Update last_used.
             key.save()
