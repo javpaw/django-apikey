@@ -61,6 +61,8 @@ class Token(models.Model):
     #: IP Address that creates the token.
     ip = models.IPAddressField(null=True, default=None)
 
+    expires = models.BooleanField(default=True)
+
     #: Last used time.
     last_used = models.DateTimeField(auto_now=True)
 
