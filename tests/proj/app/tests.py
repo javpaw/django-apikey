@@ -25,6 +25,7 @@ class TokenTest(TestCase):
         token = Token.objects.create(self.user)
         self.assertEqual(len(token.token), settings.TOKEN_SIZE)
 
+
     def test_make_request(self):
         " Make a request authenticated with Token."
 
@@ -57,3 +58,16 @@ class TokenTest(TestCase):
         sleep(2)
         response = client.get('/items', HTTP_X_AUTH_TEST_TOKEN=token.token)
         self.assertEqual(response.status_code, 401)
+
+
+    def test_make_request_with_a_token_that_does_not_expire(self):
+        token = Token.objects.create(self.user)
+        token.expires = False;
+        token.save()
+        client = Client()
+        response = client.get('/items', HTTP_X_AUTH_TEST_TOKEN=token.token)
+        self.assertEqual(response.status_code, 200)
+        sleep(2)
+        response = client.get('/items', HTTP_X_AUTH_TEST_TOKEN=token.token)
+        self.assertEqual(response.status_code, 200)
+
